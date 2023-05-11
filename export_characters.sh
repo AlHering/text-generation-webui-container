@@ -1,7 +1,16 @@
 #!/bin/bash
+#################################################
+# Script for exporting character data.
+#################################################
+
+# character exporter v0.1
 
 CURRENT_TS=$(date '+%Y_%b_%d-(%H-%M-%S)')
-EXPORT_PATH="/oobabooga-webui-container/machine_learning_models/CHARACTERS/EXPORTED"
+EXPORT_PATH="/oobabooga-webui-container/text_generation_characters/EXPORTED"
+if [[ ! -d "${EXPORT_PATH}" ]]
+then
+    mkdir "${EXPORT_PATH}"
+fi
 cd EXPORT_PATH
 if [[ ! -d "${CURRENT_TS}" ]]
 then
