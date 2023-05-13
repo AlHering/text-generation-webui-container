@@ -19,7 +19,17 @@ fi
 printf "\n%s\n" "${delimiter}"
 printf "Handling GPTQ-for-LLaMa..."
 printf "\n%s\n" "${delimiter}"
-cd text-generation-webui/repositories/GPTQ-for-LLaMa
+cd text-generation-webui/
+if [[ ! -d "repositories" ]]
+then
+    mkdir "repositories"
+fi 
+cd "repositories"
+git clone https://github.com/qwopqwop200/GPTQ-for-LLaMa.git
+cd "GPTQ-for-LLaMa"
+git checkout cuda
+git checkout 2154dff2cbe8a401f7c4ca34049c12ab44a637b0
+
 pip install wheel ninja
 pip install -r requirements.txt
 python setup_cuda.py build
@@ -32,6 +42,7 @@ printf "\n%s\n" "${delimiter}"
 cd "${SCRIPT_DIR}/text-generation-webui"
 pip install torch torchvision torchaudio
 pip install -r requirements.txt
+pip uninstall gradio_client && pip install gradio_client==0.1.0
 cd "${SCRIPT_DIR}"
 
 printf "\n%s\n" "${delimiter}"
