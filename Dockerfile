@@ -35,7 +35,7 @@ EXPOSE $PORT
 RUN /bin/bash /text-generation-webui-container/link_shared_models.sh
 
 # Setting up text-generation-webui
-#RUN /bin/bash start_linux.sh
+RUN /bin/bash /text-generation-webui-container/install.sh
 
 # Start stable-diffusion-webui
-CMD ["/bin/bash", "start_linux.sh"]
+CMD ["/bin/bash", "run_webui.sh"]
