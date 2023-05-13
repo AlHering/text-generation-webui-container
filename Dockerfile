@@ -9,8 +9,8 @@ ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Setting up working directory
-ADD ./ oobabooga-webui-container/
-WORKDIR /oobabooga-webui-container
+ADD ./ text-generation-webui-container/
+WORKDIR /text-generation-webui-container
 ENV RUNNING_IN_DOCKER True
 COPY . .
 
@@ -32,7 +32,7 @@ ENV PORT 7860
 EXPOSE $PORT
 
 # Link shared models
-RUN /bin/bash /oobabooga-webui-container/link_shared_models.sh
+RUN /bin/bash /text-generation-webui-container/link_shared_models.sh
 
 # Setting up text-generation-webui
 #RUN /bin/bash start_linux.sh
