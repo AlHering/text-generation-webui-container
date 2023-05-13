@@ -5,8 +5,6 @@ text-generation-webui/extensions/silero_tts/outputs
 text-generation-webui/extensions/elevenlabs_tts/outputs
 text-generation-webui/extensions/sd_api_pictures/outputs
 text-generation-webui/logs
-text-generation-webui/loras
-text-generation-webui/models
 text-generation-webui/repositories
 text-generation-webui/softprompts
 text-generation-webui/torch-dumps
