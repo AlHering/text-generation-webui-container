@@ -41,7 +41,7 @@ printf "\n%s\n" "${delimiter}"
 cd "${SCRIPT_DIR}/text-generation-webui"
 pip install torch torchvision torchaudio
 pip install -r requirements.txt
-pip uninstall -y gradio_client && pip install -y gradio_client==0.1.0
+pip uninstall -y gradio_client && pip install gradio_client==0.1.0
 cd "${SCRIPT_DIR}"
 
 printf "\n%s\n" "${delimiter}"
