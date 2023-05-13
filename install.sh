@@ -25,9 +25,8 @@ then
     mkdir "repositories"
 fi 
 cd "repositories"
-git clone https://github.com/qwopqwop200/GPTQ-for-LLaMa.git
+git clone https://github.com/qwopqwop200/GPTQ-for-LLaMa.git -b cuda
 cd "GPTQ-for-LLaMa"
-git checkout cuda
 git checkout 2154dff2cbe8a401f7c4ca34049c12ab44a637b0
 
 pip install wheel ninja
