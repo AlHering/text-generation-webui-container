@@ -10,6 +10,7 @@ else
     bash /text-generation-webui-container/link_shared_models.sh
 fi
 
-source /text-generation-webui-container/venv/bin/activate
+source "${CONDA_DIR}/etc/profile.d/conda.sh"
+conda activate "$VENV_DIR"
 cd /text-generation-webui-container/text-generation-webui
 python server.py --auto-devices --chat --xformers --model-menu
