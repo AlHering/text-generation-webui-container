@@ -13,4 +13,4 @@ fi
 source "${CONDA_DIR}/etc/profile.d/conda.sh"
 conda activate "$VENV_DIR"
 cd /text-generation-webui-container/text-generation-webui
-python server.py --auto-devices --chat --xformers --model-menu
+python server.py --auto-devices --chat --xformers --model-menu --sdp-attention
