@@ -9,9 +9,11 @@ ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Setting up working directory
-ADD ./ oobabooga-webui-container/
-WORKDIR /oobabooga-webui-container
+ADD ./ text-generation-webui-container/
+WORKDIR /text-generation-webui-container
 ENV RUNNING_IN_DOCKER True
+ENV CONDA_DIR "/text-generation-webui-container/conda"
+ENV VENV_DIR "/text-generation-webui-container/venv"
 COPY . .
 
 # Install prerequisits
@@ -21,21 +23,25 @@ RUN apt-get update && apt-get install -y apt-utils \
         p7zip-full p7zip-rar \
         python3-pip python3-venv
 
-# Create venv
-RUN if [ ! -d "venv" ]; \
-then \
-    python3 -m venv venv; \
-fi 
+# Download and install miniconda
+RUN curl -Lk "https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh" > "miniconda_installer.sh" \
+    && chmod u+x "miniconda_installer.sh" \
+    && /bin/bash "miniconda_installer.sh" -b -p "$CONDA_DIR" \
+    && echo "Installed miniconda version:" \
+    && "${CONDA_DIR}/bin/conda" --version
+
+# Create conda environment
+RUN "${CONDA_DIR}/bin/conda" create -y -k --prefix "$VENV_DIR" python=3.10
 
 # Networking
 ENV PORT 7860
 EXPOSE $PORT
 
 # Link shared models
-RUN /bin/bash /oobabooga-webui-container/link_shared_models.sh
+RUN /bin/bash /text-generation-webui-container/link_shared_models.sh
 
 # Setting up text-generation-webui
-#RUN /bin/bash start_linux.sh
+RUN /bin/bash /text-generation-webui-container/install.sh
 
 # Start stable-diffusion-webui
-CMD ["/bin/bash", "start_linux.sh"]
+CMD ["/bin/bash", "run_webui.sh"]

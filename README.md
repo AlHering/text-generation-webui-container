@@ -7,6 +7,7 @@
 
 ## Used code
 - oobabooga's Text Generation WebUI: https://github.com/oobabooga/text-generation-webui
+- GPTQ-for-LLaMa: https://github.com/qwopqwop200/GPTQ-for-LLaMa
 
 
 # Text generation web UI
