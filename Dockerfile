@@ -43,5 +43,5 @@ RUN /bin/bash /text-generation-webui-container/link_shared_models.sh
 # Setting up text-generation-webui
 RUN /bin/bash /text-generation-webui-container/install.sh
 
-# Start stable-diffusion-webui
+# Start text-generation-webui
 CMD ["/bin/bash", "run_webui.sh"]
