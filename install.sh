@@ -26,7 +26,7 @@ printf "\n%s\n" "${delimiter}"
 printf "Handling main webui requirements..."
 printf "\n%s\n" "${delimiter}"
 cd "${SCRIPT_DIR}/text-generation-webui"
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 printf "\n%s\n" "${delimiter}"
 printf "Handling GPTQ-for-LLaMa..."
@@ -41,12 +41,17 @@ git clone https://github.com/qwopqwop200/GPTQ-for-LLaMa.git -b cuda
 cd "GPTQ-for-LLaMa"
 git checkout 2154dff2cbe8a401f7c4ca34049c12ab44a637b0
 
-pip install wheel
-pip install -r requirements.txt
-python setup_cuda.py build
-python setup_cuda.py install
+python -m pip install wheel
+python -m pip install -r requirements.txt
+python -m pip install
+#python setup_cuda.py build
+if [[ -f "setup_cuda.py" ]]
+then
+    mv setup_cuda.py setup.py
+fi 
+python -m pip install .
 
-pip uninstall -y gradio_client && pip install gradio_client==0.1.0
+python -m pip uninstall -y gradio_client && python -m pip install gradio_client==0.1.0
 cd "${SCRIPT_DIR}"
 
 printf "\n%s\n" "${delimiter}"
