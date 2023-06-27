@@ -31,7 +31,7 @@ python -m pip install -r requirements.txt
 printf "\n%s\n" "${delimiter}"
 printf "Handling GPTQ-for-LLaMa..."
 printf "\n%s\n" "${delimiter}"
-cd text-generation-webui/
+
 if [[ ! -d "repositories" ]]
 then
     mkdir "repositories"
