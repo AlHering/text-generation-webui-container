@@ -51,7 +51,7 @@ then
 fi 
 python -m pip install .
 
-python -m pip uninstall -y gradio_client && python -m pip install gradio_client==0.1.0
+#python -m pip uninstall -y gradio_client && python -m pip install gradio_client==0.1.0
 cd "${SCRIPT_DIR}"
 
 printf "\n%s\n" "${delimiter}"
