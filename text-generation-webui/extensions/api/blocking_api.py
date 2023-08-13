@@ -7,10 +7,15 @@ from modules import shared
 from modules.chat import generate_chat_reply
 from modules.LoRA import add_lora_to_model
 from modules.models import load_model, unload_model
-from modules.models_settings import (get_model_settings_from_yamls,
-                                     update_model_parameters)
-from modules.text_generation import (encode, generate_reply,
-                                     stop_everything_event)
+from modules.models_settings import (
+    get_model_settings_from_yamls,
+    update_model_parameters
+)
+from modules.text_generation import (
+    encode,
+    generate_reply,
+    stop_everything_event
+)
 from modules.utils import get_available_models
 
 
@@ -72,7 +77,6 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
 
             user_input = body['user_input']
-            history = body['history']
             regenerate = body.get('regenerate', False)
             _continue = body.get('_continue', False)
 
@@ -80,9 +84,9 @@ class Handler(BaseHTTPRequestHandler):
             generate_params['stream'] = False
 
             generator = generate_chat_reply(
-                user_input, history, generate_params, regenerate=regenerate, _continue=_continue, loading_message=False)
+                user_input, generate_params, regenerate=regenerate, _continue=_continue, loading_message=False)
 
-            answer = history
+            answer = generate_params['history']
             for a in generator:
                 answer = a
 
