@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y apt-utils \
     software-properties-common \
     build-essential wget curl git nano ffmpeg libsm6 libxext6 \
     p7zip-full p7zip-rar \
-    python3-pip python3-venv
+    python3-pip python3-venv && apt-get clean -y
 
 # Download and install miniconda
 RUN curl -Lk "https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh" > "miniconda_installer.sh" \
