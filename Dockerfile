@@ -37,11 +37,8 @@ RUN "${CONDA_DIR}/bin/conda" create -y -k --prefix "$VENV_DIR" python=3.10
 ENV PORT 7860
 EXPOSE $PORT
 
-# Link shared models
-RUN /bin/bash /text-generation-webui-container/link_shared_models.sh
-
 # Setting up text-generation-webui
 RUN /bin/bash /text-generation-webui-container/install.sh
 
 # Start text-generation-webui
-CMD ["/bin/bash", "run_webui.sh"]
+CMD ["/bin/bash", "link_shared_model_files.sh", "&&", "/bin/bash", "run_webui.sh"]

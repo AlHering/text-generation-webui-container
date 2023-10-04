@@ -28,6 +28,7 @@ printf "Handling main webui requirements..."
 printf "\n%s\n" "${delimiter}"
 cd "${SCRIPT_DIR}/text-generation-webui"
 python -m pip install -r requirements.txt
+conda install -y -k conda-forge::gxx_linux-64=11.2.0
 
 #printf "\n%s\n" "${delimiter}"
 #printf "Handling GPTQ-for-LLaMa..."
