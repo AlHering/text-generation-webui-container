@@ -41,4 +41,4 @@ EXPOSE $PORT
 RUN /bin/bash /text-generation-webui-container/install.sh
 
 # Start text-generation-webui
-CMD ["/bin/bash", "link_shared_model_files.sh", "&&", "/bin/bash", "run_webui.sh"]
+CMD ["/bin/bash", "link_shared_models.sh", "&&", "/bin/bash", "run_webui.sh"]
