@@ -20,12 +20,21 @@ try:
 except:
     llama_cpp_cuda = None
 
+try:
+    import llama_cpp_cuda_tensorcores
+except:
+    llama_cpp_cuda_tensorcores = None
+
 
 def llama_cpp_lib():
-    if (shared.args.cpu and llama_cpp is not None) or llama_cpp_cuda is None:
+    if shared.args.cpu and llama_cpp is not None:
         return llama_cpp
-    else:
+    elif shared.args.tensorcores and llama_cpp_cuda_tensorcores is not None:
+        return llama_cpp_cuda_tensorcores
+    elif llama_cpp_cuda is not None:
         return llama_cpp_cuda
+    else:
+        return llama_cpp
 
 
 class LlamacppHF(PreTrainedModel):
@@ -39,7 +48,7 @@ class LlamacppHF(PreTrainedModel):
             'n_tokens': self.model.n_tokens,
             'input_ids': self.model.input_ids,
             'scores': self.model.scores,
-            'ctx': self.model.ctx
+            'ctx': self.model._ctx
         }
 
         if shared.args.cfg_cache:
@@ -48,7 +57,7 @@ class LlamacppHF(PreTrainedModel):
                 'n_tokens': self.model.n_tokens,
                 'input_ids': self.model.input_ids.copy(),
                 'scores': self.model.scores.copy(),
-                'ctx': llama_cpp_lib().llama_new_context_with_model(model.model, model.params)
+                'ctx': llama_cpp_lib().llama_new_context_with_model(model.model, model.context_params)
             }
 
     def _validate_model_class(self):
@@ -65,7 +74,7 @@ class LlamacppHF(PreTrainedModel):
             'n_tokens': self.model.n_tokens,
             'input_ids': self.model.input_ids,
             'scores': self.model.scores,
-            'ctx': self.model.ctx
+            'ctx': self.model._ctx
         })
 
     def save_negative_cache(self):
@@ -73,20 +82,20 @@ class LlamacppHF(PreTrainedModel):
             'n_tokens': self.model.n_tokens,
             'input_ids': self.model.input_ids,
             'scores': self.model.scores,
-            'ctx': self.model.ctx
+            'ctx': self.model._ctx
         })
 
     def load_cache(self):
         self.model.n_tokens = self.llamacpp_cache['n_tokens']
         self.model.input_ids = self.llamacpp_cache['input_ids']
         self.model.scores = self.llamacpp_cache['scores']
-        self.model.ctx = self.llamacpp_cache['ctx']
+        self.model._ctx = self.llamacpp_cache['ctx']
 
     def load_negative_cache(self):
         self.model.n_tokens = self.llamacpp_cache_negative['n_tokens']
         self.model.input_ids = self.llamacpp_cache_negative['input_ids']
         self.model.scores = self.llamacpp_cache_negative['scores']
-        self.model.ctx = self.llamacpp_cache_negative['ctx']
+        self.model._ctx = self.llamacpp_cache_negative['ctx']
 
     @property
     def device(self) -> torch.device:
@@ -135,6 +144,9 @@ class LlamacppHF(PreTrainedModel):
                     self.model.n_tokens = longest_prefix
                     if len(seq_tensor) - longest_prefix > 0:
                         self.model.eval(seq[longest_prefix:])
+                    else:
+                        self.model.n_tokens -= 1
+                        self.model.eval([seq[-1]])
 
             if reset:
                 self.model.reset()
@@ -172,6 +184,7 @@ class LlamacppHF(PreTrainedModel):
     @classmethod
     def from_pretrained(cls, pretrained_model_name_or_path: Optional[Union[str, os.PathLike]], *model_args, **kwargs):
         assert len(model_args) == 0 and len(kwargs) == 0, "extra args is currently not supported"
+
         if isinstance(pretrained_model_name_or_path, str):
             pretrained_model_name_or_path = Path(pretrained_model_name_or_path)
 
@@ -191,18 +204,19 @@ class LlamacppHF(PreTrainedModel):
         params = {
             'model_path': str(model_file),
             'n_ctx': shared.args.n_ctx,
-            'seed': int(shared.args.llama_cpp_seed),
             'n_threads': shared.args.threads or None,
+            'n_threads_batch': shared.args.threads_batch or None,
             'n_batch': shared.args.n_batch,
             'use_mmap': not shared.args.no_mmap,
             'use_mlock': shared.args.mlock,
-            'mul_mat_q': shared.args.mul_mat_q,
-            'low_vram': shared.args.low_vram,
+            'mul_mat_q': not shared.args.no_mul_mat_q,
+            'numa': shared.args.numa,
             'n_gpu_layers': shared.args.n_gpu_layers,
             'rope_freq_base': RoPE.get_rope_freq_base(shared.args.alpha_value, shared.args.rope_freq_base),
             'tensor_split': tensor_split_list,
             'rope_freq_scale': 1.0 / shared.args.compress_pos_emb,
-            'logits_all': True,
+            'logits_all': shared.args.logits_all,
+            'offload_kqv': not shared.args.no_offload_kqv
         }
 
         Llama = llama_cpp_lib().Llama

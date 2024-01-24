@@ -91,15 +91,19 @@ div.svelte-15lo0d8 > *, div.svelte-15lo0d8 > .form > * {
 
 .header_bar {
     background-color: #f7f7f7;
-    margin-bottom: 19px;
-    display: inline !important;
+    box-shadow: 0 2px 3px rgba(22 22 22 / 35%);
+    margin-bottom: 0;
     overflow-x: scroll;
     margin-left: calc(-1 * var(--size-4));
     margin-right: calc(-1 * var(--size-4));
+    display: block !important;
+    text-wrap: nowrap;
+    z-index: 90;
 }
 
 .dark .header_bar {
     border: none !important;
+    box-shadow: 0 3px 4px rgba(20 20 20 / 60%);
     background-color: #8080802b;
 }
 
@@ -144,7 +148,7 @@ div.svelte-15lo0d8 > *, div.svelte-15lo0d8 > .form > * {
     color: #efefef !important;
 }
 
-@media screen and (max-width: 711px) {
+@media screen and (width <= 711px) {
     .textbox_default textarea {
         height: calc(100dvh - 259px);
     }
@@ -162,7 +166,7 @@ div.svelte-15lo0d8 > *, div.svelte-15lo0d8 > .form > * {
     }
 }
 
-/* Hide the gradio footer*/
+/* Hide the gradio footer */
 footer {
     display: none !important;
 }
@@ -172,18 +176,28 @@ button {
 }
 
 .file-saver {
-  position: fixed !important;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* center horizontally */
-  max-width: 500px;
-  background-color: var(--input-background-fill);
-  border: 2px solid black !important;
-  z-index: 1000;
+    position: fixed !important;
+    height: 100%;
+    z-index: 1000;
+    background-color: rgb(0 0 0 / 50%) !important;
+    margin-left: -20px;
+    margin-right: -20px;
 }
 
-.dark .file-saver {
-  border: 2px solid white !important;
+.file-saver > :first-child {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center horizontally */
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--input-background-fill);
+    border: var(--input-border-width) solid var(--input-border-color) !important;
+}
+
+.file-saver > :first-child > :last-child {
+    background: var(--block-background-fill);
+    justify-content: flex-end;
 }
 
 .checkboxgroup-table label {
@@ -201,64 +215,64 @@ button {
 }
 
 .pretty_scrollbar::-webkit-scrollbar {
-  width: 5px;
+    width: 5px;
 }
 
 .pretty_scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 .pretty_scrollbar::-webkit-scrollbar-thumb,
 .pretty_scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #c5c5d2;
+    background: #c5c5d2;
 }
 
 .dark .pretty_scrollbar::-webkit-scrollbar-thumb,
 .dark .pretty_scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+    background: #374151;
 }
 
 .pretty_scrollbar::-webkit-resizer {
-  background: #c5c5d2;
+    background: #c5c5d2;
 }
 
 .dark .pretty_scrollbar::-webkit-resizer {
-  background: #374151;
+    background: #374151;
 }
 
 audio {
-  max-width: 100%;
+    max-width: 100%;
 }
 
 /* Copied from https://github.com/AUTOMATIC1111/stable-diffusion-webui */
 .token-counter {
-  position: absolute !important;
-  top: calc( 0.5 * (100dvh - 218px) ) !important;
-  right: 2px;
-  z-index: 100;
-  background: var(--input-background-fill) !important;
-  min-height: 0 !important;
+    position: absolute !important;
+    top: calc( 0.5 * (100dvh - 218px) ) !important;
+    right: 2px;
+    z-index: 100;
+    background: var(--input-background-fill) !important;
+    min-height: 0 !important;
 }
 
 .default-token-counter {
-  top: calc( 0.5 * (100dvh - 248px) ) !important;
+    top: calc( 0.5 * (100dvh - 248px) ) !important;
 }
 
 .token-counter span {
-  padding: 1px;
-  box-shadow: 0 0 0 0.3em rgba(192,192,192,0.15), inset 0 0 0.6em rgba(192,192,192,0.075);
-  border: 2px solid rgba(192,192,192,0.4) !important;
-  border-radius: 0.4em;
+    padding: 1px;
+    box-shadow: 0 0 0 0.3em rgb(192 192 192 / 15%), inset 0 0 0.6em rgb(192 192 192 / 7.5%);
+    border: 2px solid rgb(192 192 192 / 40%) !important;
+    border-radius: 0.4em;
 }
 
 .no-background {
-  background: var(--background-fill-primary) !important;
-  padding: 0px !important;
+    background: var(--background-fill-primary) !important;
+    padding: 0 !important;
 }
 
-/*----------------------------------------------
+/* ----------------------------------------------
   Chat tab
-----------------------------------------------*/
+---------------------------------------------- */
 .h-\[40vh\], .wrap.svelte-byatnx.svelte-byatnx.svelte-byatnx {
     height: 66.67vh
 }
@@ -289,6 +303,10 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     width: 100%;
 }
 
+#chat-tab {
+    padding-top: 0;
+}
+
 #chat-tab button#Generate, #chat-tab button#stop {
     width: 89.3438px !important;
 }
@@ -303,18 +321,10 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     margin-right: auto;
 }
 
-@media screen and (max-width: 688px) {
+@media screen and (width <= 688px) {
     #chat-tab {
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-
-    .chat-parent {
-        height: calc(100dvh - 179px) !important;
-    }
-
-    .old-ui .chat-parent {
-        height: calc(100dvh - 310px) !important;
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 
@@ -322,40 +332,59 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     margin-left: auto;
     margin-right: auto;
     max-width: 880px;
-    height: 100%;
+    min-height: var(--chat-height);
     overflow-y: auto;
     padding-right: 15px;
     display: flex;
     flex-direction: column;
     word-break: break-word;
     overflow-wrap: anywhere;
+    border-top: none;
+    border-radius: 0 0 0 8px;
 }
 
 .chat-parent {
-    height: calc(100dvh - 181px);
+    height: calc(100dvh - 98px - var(--header-height) - var(--input-delta));
     overflow: auto !important;
+    border-radius: 0 !important;
+    margin-bottom: var(--input-delta) !important;
 }
 
 .old-ui .chat-parent {
-    height: calc(100dvh - 270px);
+    height: calc(100dvh - 192px - var(--header-height) - var(--input-delta));
+    margin-bottom: var(--input-delta) !important;
 }
 
 .chat-parent.bigchat {
-    height: calc(100dvh - 181px) !important;
+    height: calc(100dvh - 98px - var(--header-height) - var(--input-delta)) !important;
+    margin-bottom: var(--input-delta) !important;
 }
 
 .chat > .messages {
     display: flex;
     flex-direction: column;
+    padding-top: 25px;
 }
 
 .chat .message:last-child {
-    margin-bottom: 0px !important;
-    padding-bottom: 0px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .message-body li {
+    list-style-position: outside;
+}
+
+.chat .message-body ul, .chat .message-body ol {
+    padding-inline-start: 2em;
+}
+
+.message-body li:not(:last-child) {
     margin-top: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+.message-body li:last-child {
     margin-bottom: 0 !important;
 }
 
@@ -371,13 +400,27 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     list-style-type: disc !important;
 }
 
-.message-body pre {
-    margin-bottom: 1.25em !important;
+.message-body pre:not(:last-child) {
+    margin-bottom: 35.625px !important;
+}
+
+.message-body pre:last-child {
+    margin-bottom: 0 !important;
 }
 
 .message-body code {
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
+    border: 1px solid var(--border-color-primary);
+    border-radius: var(--radius-sm);
+    background: var(--background-fill-secondary);
+    font-size: 90%;
+    padding: 1px 3px;
+}
+
+.message-body pre > code {
+    display: block;
+    padding: 15px;
 }
 
 .message-body :not(pre) > code {
@@ -393,6 +436,14 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
 
 #chat-input textarea:focus {
     box-shadow: none !important;
+}
+
+#chat-input > :first-child {
+    background-color: transparent;
+}
+
+#chat-input .progress-text {
+    display: none;
 }
 
 @media print {
@@ -432,14 +483,21 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     position: absolute;
     height: 100%;
     background-color: var(--background-fill-primary);
-    border: 0px;
-    border-radius: 0px;
+    border: 0 !important;
+    border-radius: 0;
 }
 
 #show-controls label {
     z-index: 1000;
     position: absolute;
-    left: calc(100% - 168px);
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#show-controls span {
+    opacity: 0.6;
 }
 
 #typing-container {
@@ -451,7 +509,7 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
 }
 
 .typing {
-  position: relative;
+    position: relative;
 }
 
 .visible-dots #typing-container {
@@ -459,84 +517,86 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
 }
 
 .typing span {
-  content: '';
-  animation: blink 1.5s infinite;
-  animation-fill-mode: both;
-  height: 10px;
-  width: 10px;
-  background: #3b5998;;
-  position: absolute;
-  left:0;
-  top:0;
-  border-radius: 50%;
+    content: '';
+    animation: blink 1.5s infinite;
+    animation-fill-mode: both;
+    height: 10px;
+    width: 10px;
+    background: #3b5998;;
+    position: absolute;
+    left:0;
+    top:0;
+    border-radius: 50%;
 }
 
 .typing .dot1 {
-  animation-delay: .2s;
-  margin-left: calc(10px * 1.5);
+    animation-delay: .2s;
+    margin-left: calc(10px * 1.5);
 }
 
 .typing .dot2 {
-  animation-delay: .4s;
-  margin-left: calc(10px * 3);
+    animation-delay: .4s;
+    margin-left: calc(10px * 3);
 }
 
 @keyframes blink {
-  0% {
-    opacity: .1;
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    opacity: .1;
-  }
+    0% {
+        opacity: .1;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .1;
+    }
 }
 
 #chat-tab .generating {
-  display: none !important;
+    display: none !important;
 }
 
 .hover-element {
-  position: relative;
-  font-size: 24px;
+    position: relative;
+    font-size: 24px;
 }
 
 .hover-menu {
-  display: none;
-  position: absolute;
-  bottom: 80%;
-  left: 0;
-  background-color: var(--background-fill-secondary);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 10000;
-  min-width: 330px;
-  flex-direction: column;
+    display: none;
+    position: absolute;
+    bottom: 80%;
+    left: 0;
+    background-color: var(--background-fill-secondary);
+    box-shadow: 0 0 10px rgb(0 0 0 / 50%);
+    z-index: 10000;
+    min-width: 330px;
+    flex-direction: column;
 }
 
 .hover-menu button {
-  width: 100%;
-  background: transparent !important;
-  border-radius: 0px !important;
-  justify-content: space-between;
-  margin: 0 !important;
-  height: 36px;
+    width: 100%;
+    background: transparent !important;
+    border-radius: 0 !important;
+    justify-content: space-between;
+    margin: 0 !important;
+    height: 36px;
 }
 
 .hover-menu button:not(#clear-history-confirm) {
-  border-bottom: 0 !important;
+    border-bottom: 0 !important;
 }
 
 .hover-menu button:not(#clear-history-confirm):last-child {
-  border-bottom: var(--button-border-width) solid var(--button-secondary-border-color) !important;
+    border-bottom: var(--button-border-width) solid var(--button-secondary-border-color) !important;
 }
 
 .hover-menu button:hover {
-  background: var(--button-secondary-background-fill-hover) !important;
+    background: var(--button-secondary-background-fill-hover) !important;
 }
 
 .transparent-substring {
-  opacity: 0.333;
+    opacity: 0.333;
 }
 
 #chat-tab:not(.old-ui) #chat-buttons {
@@ -544,45 +604,45 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
 }
 
 #gr-hover-container {
-  min-width: 0 !important;
-  display: flex;
-  flex-direction: column-reverse;
-  padding-right: 20px;
-  padding-bottom: 3px;
-  flex-grow: 0 !important;
+    min-width: 0 !important;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-right: 20px;
+    padding-bottom: 3px;
+    flex-grow: 0 !important;
 }
 
 #generate-stop-container {
-  min-width: 0 !important;
-  display: flex;
-  flex-direction: column-reverse;
-  padding-bottom: 3px;
-  flex: 0 auto !important;
+    min-width: 0 !important;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 3px;
+    flex: 0 auto !important;
 }
 
 #chat-input-container {
-  min-width: 0 !important;
+    min-width: 0 !important;
 }
 
 #chat-input-container > .form {
-  background: transparent;
-  border: none;
+    background: transparent;
+    border: none;
 }
 
 #chat-input-row {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 .old-ui #chat-input-row, #chat-input-row.bigchat {
-  padding-bottom: 0px !important;
+    padding-bottom: 0 !important;
 }
 
 #chat-col {
-    padding-bottom: 115px;
+    padding-bottom: 100px;
 }
 
 .old-ui #chat-col, #chat-col.bigchat {
-    padding-bottom: 95px !important;
+    padding-bottom: 80px !important;
 }
 
 .old-ui #chat-buttons #clear-history-confirm {
@@ -593,20 +653,50 @@ div.svelte-362y77>*, div.svelte-362y77>.form>* {
     margin-top: 6px !important;
 }
 
-/*----------------------------------------------
+/* ----------------------------------------------
   Past chats menus
-----------------------------------------------*/
-#past-chats-row {
-    margin-bottom: calc( -1 * var(--layout-gap) );
-}
-
+---------------------------------------------- */
 #rename-row label {
     margin-top: var(--layout-gap);
 }
 
-/*----------------------------------------------
+/* ----------------------------------------------
+  Past chat histories in a side bar on desktop
+---------------------------------------------- */
+@media screen and (width >= 1327px) {
+    #past-chats-row {
+        position: absolute;
+        top: 16px;
+        left: 0;
+        width: calc(0.5*(var(--document-width) - 880px - 120px - 16px*2));
+        max-width: 300px;
+        margin-left: calc(-0.5*(var(--document-width) - 880px - 14px - 16px * 2));
+    }
+}
+
+/* ----------------------------------------------
   Keep dropdown menus above errored components
-----------------------------------------------*/
+---------------------------------------------- */
 .options {
     z-index: 100 !important;
+}
+
+/* ----------------------------------------------
+  Big profile picture for characters
+---------------------------------------------- */
+.bigProfilePicture {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: calc((100vw - 880px - 120px) /2);
+}
+
+.pfp_character:hover {
+    cursor: pointer;
+}
+
+@media screen and (width <= 1300px) {
+    .bigProfilePicture {
+        display: none;
+    }
 }

@@ -4,9 +4,10 @@ from pathlib import Path
 import gradio as gr
 import torch
 import yaml
+from transformers import is_torch_xpu_available
 
+import extensions
 from modules import shared
-
 
 with open(Path(__file__).resolve().parent / '../css/NotoSans/stylesheet.css', 'r') as f:
     css = f.read()
@@ -20,6 +21,8 @@ with open(Path(__file__).resolve().parent / '../js/switch_tabs.js', 'r') as f:
     switch_tabs_js = f.read()
 with open(Path(__file__).resolve().parent / '../js/show_controls.js', 'r') as f:
     show_controls_js = f.read()
+with open(Path(__file__).resolve().parent / '../js/update_big_picture.js', 'r') as f:
+    update_big_picture_js = f.read()
 
 refresh_symbol = '🔄'
 delete_symbol = '🗑️'
@@ -52,7 +55,8 @@ def list_model_elements():
         'bf16',
         'load_in_8bit',
         'trust_remote_code',
-        'use_fast',
+        'no_use_fast',
+        'use_flash_attention_2',
         'load_in_4bit',
         'compute_dtype',
         'quant_type',
@@ -67,26 +71,37 @@ def list_model_elements():
         'no_inject_fused_mlp',
         'no_use_cuda_fp16',
         'disable_exllama',
+        'disable_exllamav2',
         'cfg_cache',
+        'no_flash_attn',
+        'num_experts_per_token',
+        'cache_8bit',
         'threads',
+        'threads_batch',
         'n_batch',
         'no_mmap',
-        'low_vram',
         'mlock',
-        'mul_mat_q',
+        'no_mul_mat_q',
         'n_gpu_layers',
         'tensor_split',
         'n_ctx',
-        'llama_cpp_seed',
         'gpu_split',
         'max_seq_len',
         'compress_pos_emb',
         'alpha_value',
-        'rope_freq_base'
+        'rope_freq_base',
+        'numa',
+        'logits_all',
+        'no_offload_kqv',
+        'tensorcores',
+        'hqq_backend',
     ]
-
-    for i in range(torch.cuda.device_count()):
-        elements.append(f'gpu_memory_{i}')
+    if is_torch_xpu_available():
+        for i in range(torch.xpu.device_count()):
+            elements.append(f'gpu_memory_{i}')
+    else:
+        for i in range(torch.cuda.device_count()):
+            elements.append(f'gpu_memory_{i}')
 
     return elements
 
@@ -96,14 +111,24 @@ def list_interface_input_elements():
         'max_new_tokens',
         'auto_max_new_tokens',
         'max_tokens_second',
+        'max_updates_second',
+        'prompt_lookup_num_tokens',
         'seed',
         'temperature',
+        'temperature_last',
+        'dynamic_temperature',
+        'dynatemp_low',
+        'dynatemp_high',
+        'dynatemp_exponent',
         'top_p',
+        'min_p',
         'top_k',
         'typical_p',
         'epsilon_cutoff',
         'eta_cutoff',
         'repetition_penalty',
+        'presence_penalty',
+        'frequency_penalty',
         'repetition_penalty_range',
         'encoder_repetition_penalty',
         'no_repeat_ngram_size',
@@ -141,11 +166,9 @@ def list_interface_input_elements():
         'greeting',
         'context',
         'mode',
-        'instruction_template',
-        'name1_instruct',
-        'name2_instruct',
-        'context_instruct',
-        'turn_template',
+        'custom_system_message',
+        'instruction_template_str',
+        'chat_template_str',
         'chat_style',
         'chat-instruct_command',
     ]
@@ -187,7 +210,7 @@ def apply_interface_values(state, use_persistent=False):
         return [state[k] if k in state else gr.update() for k in elements]
 
 
-def save_settings(state, preset, instruction_template, extensions, show_controls):
+def save_settings(state, preset, extensions_list, show_controls, theme_state):
     output = copy.deepcopy(shared.settings)
     exclude = ['name2', 'greeting', 'context', 'turn_template']
     for k in state:
@@ -198,28 +221,31 @@ def save_settings(state, preset, instruction_template, extensions, show_controls
     output['prompt-default'] = state['prompt_menu-default']
     output['prompt-notebook'] = state['prompt_menu-notebook']
     output['character'] = state['character_menu']
-    output['instruction_template'] = instruction_template
-    output['default_extensions'] = extensions
+    output['default_extensions'] = extensions_list
     output['seed'] = int(output['seed'])
     output['show_controls'] = show_controls
+    output['dark_theme'] = True if theme_state == 'dark' else False
+
+    # Save extension values in the UI
+    for extension_name in extensions_list:
+        extension = getattr(extensions, extension_name).script
+        if hasattr(extension, 'params'):
+            params = getattr(extension, 'params')
+            for param in params:
+                _id = f"{extension_name}-{param}"
+                # Only save if different from default value
+                if param not in shared.default_settings or params[param] != shared.default_settings[param]:
+                    output[_id] = params[param]
+
+    # Do not save unchanged settings
+    for key in list(output.keys()):
+        if key in shared.default_settings and output[key] == shared.default_settings[key]:
+            output.pop(key)
 
     return yaml.dump(output, sort_keys=False, width=float("inf"))
 
 
-class ToolButton(gr.Button, gr.components.IOComponent):
-    """
-    Small button with single emoji as text, fits inside gradio forms
-    Copied from https://github.com/AUTOMATIC1111/stable-diffusion-webui
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def get_block_name(self):
-        return "button"
-
-
-def create_refresh_button(refresh_component, refresh_method, refreshed_args, elem_class):
+def create_refresh_button(refresh_component, refresh_method, refreshed_args, elem_class, interactive=True):
     """
     Copied from https://github.com/AUTOMATIC1111/stable-diffusion-webui
     """
@@ -227,24 +253,13 @@ def create_refresh_button(refresh_component, refresh_method, refreshed_args, ele
         refresh_method()
         args = refreshed_args() if callable(refreshed_args) else refreshed_args
 
-        for k, v in args.items():
-            setattr(refresh_component, k, v)
-
         return gr.update(**(args or {}))
 
-    refresh_button = ToolButton(value=refresh_symbol, elem_classes=elem_class)
+    refresh_button = gr.Button(refresh_symbol, elem_classes=elem_class, interactive=interactive)
     refresh_button.click(
-        fn=refresh,
+        fn=lambda: {k: tuple(v) if type(k) is list else v for k, v in refresh().items()},
         inputs=[],
         outputs=[refresh_component]
     )
 
     return refresh_button
-
-
-def create_delete_button(**kwargs):
-    return ToolButton(value=delete_symbol, **kwargs)
-
-
-def create_save_button(**kwargs):
-    return ToolButton(value=save_symbol, **kwargs)
