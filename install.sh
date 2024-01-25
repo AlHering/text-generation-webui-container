@@ -24,8 +24,10 @@ conda activate "$VENV_DIR"
 printf "\n%s\n" "${delimiter}"
 printf "Handling main webui requirements..."
 printf "\n%s\n" "${delimiter}"
-python -m pip install -r requirements_cuda.txt
 conda install -y -k conda-forge::gxx_linux-64=11.2.0
+conda install -y -c nvidia/label/cuda-11.7.1 cuda-runtime
+python -m pip install --no-cache-dir -r requirements_cuda.txt
+
 
 printf "\n%s\n" "${delimiter}"
 printf "Finished installation"
