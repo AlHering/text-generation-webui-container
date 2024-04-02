@@ -13,4 +13,4 @@ else
 fi
 
 cd /text-generation-webui-container/text-generation-webui
-python server.py --auto-devices --chat --model-menu
+python server.py --auto-devices --chat --model-menu --trust-remote-code
