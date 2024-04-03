@@ -27,6 +27,7 @@ printf "\n%s\n" "${delimiter}"
 conda install -y -k conda-forge::gxx_linux-64=11.2.0
 #conda install -y -c nvidia/label/cuda-11.7.1 cuda-runtime
 python -m pip install --no-cache-dir -r requirements_cuda117.txt
+python "${SCRIPT_DIR}/install_extensions.py"
 
 
 printf "\n%s\n" "${delimiter}"
