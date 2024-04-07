@@ -9,7 +9,12 @@ import os
 
 DEFAULT_CONDA_DIR = "/text-generation-webui-container/conda"
 DEFAULT_VENV_DIR = "/text-generation-webui-container/venv"
-EXTENSION_FOLDER = "/text-generation-webui-container/text-generation-webui/extensions"
+WEBUI_FOLDER = "/text-generation-webui-container/text-generation-webui"
+EXTENSION_FOLDER = f"{WEBUI_FOLDER}/extensions"
+# Format for conditioning the base extensions: "<name of the extension folder" (note, that "*" stands for all extensions)
+BASE_EXTENSIONS = [
+    "*"
+]
 # Format for additional extensions: (<extension repository for cloning>, <particular commit to checkout>, <extension folder name>)
 ADDITIONAL_EXTENSIONS = [
 ]
@@ -22,15 +27,16 @@ for extension in ADDITIONAL_EXTENSIONS:
         cmd += f" && git checkout {extension[1]}"
     os.system(cmd)
 
-base_python_command = f"source {os.environ.get('CONDA_DIR', DEFAULT_CONDA_DIR)}/etc/profile.d/conda.sh && conda activate {os.environ.get('VENV_DIR', DEFAULT_CONDA_DIR)}"
+base_python_command = f". {os.environ.get('CONDA_DIR', DEFAULT_CONDA_DIR)}/etc/profile.d/conda.sh && conda activate {os.environ.get('VENV_DIR', DEFAULT_CONDA_DIR)}"
 for root, dirs, _ in os.walk(EXTENSION_FOLDER, topdown=True):
-    for extension_folder in dirs:
+    for extension_folder in [directory for directory in dirs if "*" in BASE_EXTENSIONS or directory in BASE_EXTENSIONS]:
+        print(f"Handling {extension_folder}")
         requirements_file = os.path.join(root, extension_folder, "requirements.txt")
         script_file = os.path.join(root, extension_folder, "script.py")
         if os.path.isfile(requirements_file):
-            os.system(f"{base_python_command} && python -m pip install {requirements_file}")
+            os.system(f"{base_python_command} && python -m pip install -r {requirements_file}")
         if os.path.isfile(script_file):
-            os.system(f"{base_python_command} && python {script_file}")
+            os.system(f"{base_python_command} && export PYTHONPATH=$PYTHONPATH:{WEBUI_FOLDER}:{os.path.join(root, extension_folder)} && python {script_file}")
     break
 
 print("Finished adding extensions.")
