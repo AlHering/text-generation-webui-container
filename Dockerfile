@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.7.1-devel-ubuntu22.04
+FROM ubuntu:22.04
 ENV PYTHONUNBUFFERED 1
 
 # Setting up basic repo 
