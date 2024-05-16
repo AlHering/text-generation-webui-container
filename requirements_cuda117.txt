@@ -1,3 +1,5 @@
+# Potentially outdated! Used for text-generation-webui-container <=v1.7 
+
 accelerate==0.25.*
 colorama
 datasets
