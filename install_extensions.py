@@ -17,13 +17,14 @@ BASE_EXTENSIONS = [
 ]
 # Format for additional extensions: (<extension repository for cloning>, <particular commit to checkout>, <extension folder name>)
 ADDITIONAL_EXTENSIONS = [
+    ("--depth=1 https://github.com/ashleykleynhans/oobabooga-legacy-api-extension.git api", "", "api")
 ]
 
 base_cd_command = "cd /text-generation-webui-container/text-generation-webui/extensions"
 for extension in ADDITIONAL_EXTENSIONS:
     print(f"Handling {extension[2]}")
     cmd = f"{base_cd_command} && git clone {extension[0]} && cd {extension[2]}"
-    if os.environ.get("STRICT_EXTENSION_VERSIONING", "False") == "True":
+    if os.environ.get("STRICT_EXTENSION_VERSIONING", "False") == "True" and extension[1]:
         cmd += f" && git checkout {extension[1]}"
     os.system(cmd)
 
@@ -34,7 +35,7 @@ for root, dirs, _ in os.walk(EXTENSION_FOLDER, topdown=True):
         requirements_file = os.path.join(root, extension_folder, "requirements.txt")
         script_file = os.path.join(root, extension_folder, "script.py")
         if os.path.isfile(requirements_file):
-            os.system(f"{base_python_command} && python -m pip install -r {requirements_file}")
+            os.system(f"{base_python_command} && python -m pip install --no-cache-dir -r {requirements_file}")
         if os.path.isfile(script_file):
             os.system(f"{base_python_command} && export PYTHONPATH=$PYTHONPATH:{WEBUI_FOLDER}:{os.path.join(root, extension_folder)} && python {script_file}")
     break
